@@ -1,1 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>아트브리즈 대관신청 | MYEONGDONG ARTBREEZE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --gold: #d4a843;
+    --gold-light: #f0c96a;
+    --gold-dim: #d4a84320;
+    --gold-border: #d4a84340;
+    --bg: #0a0a0a;
+    --bg-2: #111;
+    --bg-3: #181818;
+    --bg-4: #202020;
+    --border: #282828;
+    --border-mid: #353535;
+    --text: #f0ece4;
+    --text-mid: #b0a898;
+    --text-dim: #666;
+    --red: #e05050;
+    --green: #50c080;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:var(--bg); color:var(--text);
+    font-family:'Noto Sans KR',sans-serif; font-weight:500;
+    min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased;
+  }
+  .page-wrapper { max-width:780px; margin:0 auto; padding:56px 24px 100px; }
 
+  /* HEADER */
+  .header { text-align:center; margin-bottom:52px; }
+  .header-line { width:1px; height:48px; background:linear-gradient(to bottom,transparent,var(--gold)); margin:0 auto 20px; }
+  .header-badge {
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'DM Mono',monospace; font-size:11px; font-weight:600;
+    letter-spacing:0.18em; color:var(--gold); margin-bottom:16px; text-transform:uppercase;
+  }
+  .header-badge::before,.header-badge::after { content:''; width:28px; height:1px; background:var(--gold); opacity:0.6; }
+  .header h1 { font-size:clamp(28px,5.5vw,46px); font-weight:900; letter-spacing:-0.03em; line-height:1.1; color:var(--text); margin-bottom:10px; }
+  .header h1 span { color:var(--gold-light); }
+  .header-sub { font-size:12px; font-weight:600; color:var(--text-dim); letter-spacing:0.12em; font-family:'DM Mono',monospace; text-transform:uppercase; }
+
+  /* TABS */
+  .tabs { display:flex; margin-bottom:32px; border-bottom:1px solid var(--border); }
+  .tab-btn {
+    background:none; border:none; color:var(--text-dim);
+    font-family:'Noto Sans KR',sans-serif; font-weight:700; font-size:14px;
+    padding:14px 26px; cursor:pointer; transition:color 0.2s; position:relative;
+  }
+  .tab-btn.active { color:var(--gold-light); }
+  .tab-btn.active::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:2px; background:var(--gold); }
+  .tab-btn:hover:not(.active) { color:var(--text-mid); }
+  .tab-count {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; background:var(--gold-dim); border:1px solid var(--gold-border);
+    border-radius:50%; font-size:10px; font-family:'DM Mono',monospace; font-weight:700;
+    color:var(--gold); margin-left:6px; vertical-align:middle;
+  }
+  .tab-guide { margin-left:auto; font-size:12px; font-weight:700; color:var(--gold); opacity:0.75; }
+
+  /* PANELS */
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* FORM SECTIONS */
+  .form-section {
+    background:var(--bg-2); border:1px solid var(--border);
+    border-radius:4px; padding:28px 24px; margin-bottom:14px; transition:border-color 0.25s;
+  }
+  .form-section:hover { border-color:var(--border-mid); }
+  .section-title { display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+  .section-num { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:0.08em; min-width:26px; }
+  .section-label { font-size:13px; font-weight:800; letter-spacing:0.06em; color:var(--text-mid); text-transform:uppercase; }
+  .section-line { flex:1; height:1px; background:linear-gradient(to right,var(--border-mid),transparent); }
+
+  /* FIELDS */
+  .field-grid { display:grid; gap:14px; }
+  .field-grid.cols-2 { grid-template-columns:1fr 1fr; }
+  .field-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+  @media(max-width:580px){.field-grid.cols-2,.field-grid.cols-3{grid-template-columns:1fr;}}
+  .field { display:flex; flex-direction:column; gap:7px; }
+  .field label { font-size:11px; font-weight:700; color:var(--text-mid); letter-spacing:0.1em; text-transform:uppercase; font-family:'DM Mono',monospace; display:flex; align-items:center; gap:5px; }
+  .req { color:var(--gold); font-size:13px; line-height:1; }
+  .field input,.field select,.field textarea {
+    background:var(--bg-3); border:1px solid var(--border); border-radius:3px;
+    color:var(--text); font-family:'Noto Sans KR',sans-serif; font-weight:600; font-size:14px;
+    padding:12px 14px; outline:none; transition:border-color 0.2s,background 0.2s; width:100%; -webkit-appearance:none;
+  }
+  .field select {
+    cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 14px center; padding-right:38px; background-color:var(--bg-3);
+  }
+  .field textarea { resize:vertical; min-height:88px; line-height:1.7; }
+  .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--gold); background:var(--bg-4); }
+  .field input::placeholder,.field textarea::placeholder { color:#444; font-weight:400; font-size:13px; }
+
+  /* SPACE CARDS */
+  .space-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(196px,1fr)); gap:10px; }
+  .space-card {
+    background:var(--bg-3); border:1px solid var(--border);
+    border-radius:3px; padding:14px; cursor:pointer; transition:all 0.2s; position:relative;
+  }
+  .space-card:hover { border-color:var(--gold-border); background:var(--bg-4); }
+  .space-card.selected { border-color:var(--gold); background:var(--bg-4); }
+  .space-card.selected::after {
+    content:'✓'; position:absolute; top:9px; right:11px;
+    font-family:'DM Mono',monospace; font-size:11px; font-weight:700; color:var(--gold);
+  }
+  .space-card-floor { font-size:11px; font-family:'DM Mono',monospace; font-weight:600; color:var(--gold); letter-spacing:0.04em; margin-bottom:5px; }
+  .space-card-name { font-size:14px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .space-card-cap { font-size:11px; font-weight:500; color:var(--text-dim); }
+
+  /* PURPOSE CHIPS */
+  .purpose-chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip {
+    background:var(--bg-3); border:1px solid var(--border); border-radius:20px;
+    padding:7px 16px; font-size:13px; font-weight:700; color:var(--text-mid); cursor:pointer; transition:all 0.2s;
+  }
+  .chip:hover { border-color:var(--gold-border); color:var(--text); }
+  .chip.selected { border-color:var(--gold); background:var(--gold-dim); color:var(--gold-light); }
+
+  #duration-display { margin-top:10px; font-family:'DM Mono',monospace; font-size:12px; font-weight:600; color:var(--gold); letter-spacing:0.04em; min-height:16px; }
+
+  /* AGREEMENT */
+  .agreement-box {
+    background:var(--bg-3); border:1px solid var(--border); border-radius:3px; padding:16px;
+    font-size:12px; font-weight:400; color:var(--text-dim); line-height:1.85; max-height:130px; overflow-y:auto; margin-bottom:14px;
+  }
+  .agreement-box strong { color:var(--text-mid); font-weight:700; }
+  .agreement-box::-webkit-scrollbar { width:4px; }
+  .agreement-box::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:2px; }
+  .checkbox-row { display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:10px; }
+  .checkbox-row input[type="checkbox"] { width:16px; height:16px; accent-color:var(--gold); margin-top:2px; flex-shrink:0; cursor:pointer; }
+  .checkbox-row span { font-size:13px; font-weight:600; color:var(--text-mid); line-height:1.6; }
+
+  /* SUBMIT */
+  .submit-area { margin-top:24px; display:flex; gap:12px; }
+  .btn-submit {
+    flex:1; background:linear-gradient(135deg,#1e1800,#2c2400); border:1px solid var(--gold);
+    color:var(--gold-light); font-family:'Noto Sans KR',sans-serif; font-size:16px; font-weight:800;
+    padding:18px 32px; cursor:pointer; border-radius:3px; letter-spacing:0.02em;
+    transition:all 0.25s; position:relative; overflow:hidden;
+  }
+  .btn-submit::after { content:''; position:absolute; inset:0; background:var(--gold-dim); opacity:0; transition:opacity 0.25s; }
+  .btn-submit:hover::after { opacity:1; }
+  .btn-reset {
+    background:var(--bg-3); border:1px solid var(--border); color:var(--text-dim);
+    font-family:'Noto Sans KR',sans-serif; font-size:13px; font-weight:700;
+    padding:18px 20px; cursor:pointer; border-radius:3px; transition:all 0.2s; white-space:nowrap;
+  }
+  .btn-reset:hover { border-color:var(--border-mid); color:var(--text-mid); }
+  .section-divider { height:1px; background:linear-gradient(to right,transparent,var(--border-mid) 30%,var(--border-mid) 70%,transparent); margin:20px 0; }
+
+  /* LIST */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+  @media(max-width:560px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+  .stat-card { background:var(--bg-2); border:1px solid var(--border); border-radius:3px; padding:14px; }
+  .stat-num { font-family:'DM Mono',monospace; font-size:26px; font-weight:600; color:var(--gold-light); line-height:1; margin-bottom:5px; }
+  .stat-label { font-size:11px; font-weight:700; color:var(--text-dim); font-family:'DM Mono',monospace; letter-spacing:0.05em; }
+  .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+  .search-input {
+    flex:1; min-width:200px; background:var(--bg-2); border:1px solid var(--border); border-radius:3px;
+    color:var(--text); font-family:'Noto Sans KR',sans-serif; font-weight:600; font-size:13px;
+    padding:10px 14px; outline:none; transition:border-color 0.2s;
+  }
+  .search-input:focus { border-color:var(--gold); }
+  .search-input::placeholder { color:#444; font-weight:400; }
+  .filter-select {
+    background:var(--bg-2); border:1px solid var(--border); border-radius:3px;
+    color:var(--text-mid); font-family:'Noto Sans KR',sans-serif; font-weight:700; font-size:12px;
+    padding:10px 32px 10px 12px; outline:none; cursor:pointer; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 10px center; background-color:var(--bg-2);
+  }
+  .btn-toolbar {
+    background:var(--bg-3); border:1px solid var(--border-mid); color:var(--text-mid);
+    font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700;
+    padding:10px 16px; cursor:pointer; border-radius:3px; transition:all 0.2s; white-space:nowrap;
+  }
+  .btn-toolbar:hover { border-color:var(--gold-border); color:var(--gold); }
+  .btn-toolbar.danger:hover { border-color:#e0505044; color:var(--red); }
+
+  /* APP CARDS */
+  .app-card { background:var(--bg-2); border:1px solid var(--border); border-radius:3px; margin-bottom:10px; overflow:hidden; transition:border-color 0.2s; animation:fadeUp 0.25s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+  .app-card:hover { border-color:var(--border-mid); }
+  .app-card-header { display:flex; align-items:center; padding:14px 18px; gap:14px; cursor:pointer; flex-wrap:wrap; }
+  .app-id { font-family:'DM Mono',monospace; font-size:10px; font-weight:700; color:var(--gold); letter-spacing:0.05em; min-width:70px; opacity:0.8; }
+  .app-name { font-size:15px; font-weight:800; flex:1; letter-spacing:-0.02em; }
+  .app-space { font-size:12px; font-weight:700; color:var(--text-mid); font-family:'DM Mono',monospace; }
+  .app-date-badge { font-size:11px; font-weight:600; color:var(--text-dim); font-family:'DM Mono',monospace; }
+  .status-badge { font-size:10px; font-family:'DM Mono',monospace; font-weight:700; padding:4px 11px; border-radius:20px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
+  .status-대기 { background:#1a1400; border:1px solid #d4a84340; color:var(--gold); }
+  .status-승인 { background:#0c1e12; border:1px solid #50c08040; color:var(--green); }
+  .status-거절 { background:#1e0c0c; border:1px solid #e0505040; color:var(--red); }
+  .app-card-body { display:none; padding:0 18px 18px; border-top:1px solid var(--border); }
+  .app-card-body.open { display:block; }
+  .detail-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding-top:16px; margin-bottom:14px; }
+  @media(max-width:560px){.detail-grid{grid-template-columns:repeat(2,1fr);}}
+  .detail-key { font-size:10px; font-family:'DM Mono',monospace; font-weight:700; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px; }
+  .detail-val { font-size:14px; font-weight:600; color:var(--text); line-height:1.4; }
+  .detail-box { font-size:13px; font-weight:500; color:var(--text-mid); background:var(--bg-3); padding:12px 14px; border-radius:3px; line-height:1.75; margin-bottom:12px; }
+  .card-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .btn-action { background:none; border:1px solid var(--border); color:var(--text-dim); font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700; padding:8px 16px; cursor:pointer; border-radius:3px; transition:all 0.2s; }
+  .btn-approve:hover { border-color:var(--green); color:var(--green); }
+  .btn-reject:hover  { border-color:var(--red); color:var(--red); }
+  .btn-delete { margin-left:auto; }
+  .btn-delete:hover  { border-color:var(--red); color:var(--red); }
+  .empty-state { text-align:center; padding:64px 0; color:var(--text-dim); }
+  .empty-icon  { font-size:40px; margin-bottom:12px; opacity:0.25; }
+  .empty-text  { font-family:'DM Mono',monospace; font-size:12px; font-weight:700; letter-spacing:0.04em; }
+
+  /* MODAL */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:200;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity 0.3s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:#111; border:1px solid var(--border-mid); border-radius:6px;
+    max-width:680px; width:100%; max-height:85vh; overflow-y:auto; padding:32px;
+    transform:translateY(14px); transition:transform 0.3s;
+  }
+  .modal-overlay.open .modal { transform:translateY(0); }
+  .modal::-webkit-scrollbar { width:4px; }
+  .modal::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:2px; }
+  .modal-title { font-size:20px; font-weight:900; letter-spacing:-0.03em; color:var(--text); margin-bottom:6px; }
+  .modal-sub { font-size:12px; font-weight:500; color:var(--text-dim); font-family:'DM Mono',monospace; margin-bottom:28px; letter-spacing:0.04em; }
+  .guide-step { margin-bottom:24px; }
+  .guide-step-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .guide-step-num {
+    width:24px; height:24px; background:var(--gold-dim); border:1px solid var(--gold-border);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'DM Mono',monospace; font-size:11px; font-weight:700; color:var(--gold); flex-shrink:0;
+  }
+  .guide-step-title { font-size:14px; font-weight:800; color:var(--text); letter-spacing:-0.02em; }
+  .guide-step p { font-size:13px; font-weight:500; color:var(--text-mid); line-height:1.8; margin-bottom:10px; padding-left:34px; }
+  .guide-divider { height:1px; background:var(--border); margin:20px 0; }
+  .modal-close {
+    width:100%; background:var(--bg-3); border:1px solid var(--border-mid); color:var(--text-mid);
+    font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:700;
+    padding:14px; cursor:pointer; border-radius:3px; transition:all 0.2s; margin-top:8px;
+  }
+  .modal-close:hover { border-color:var(--gold-border); color:var(--gold); }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px);
+    background:var(--bg-4); border:1px solid var(--gold-border); border-radius:3px;
+    padding:13px 22px; font-family:'DM Mono',monospace; font-size:12px; font-weight:700;
+    color:var(--gold-light); letter-spacing:0.02em; opacity:0; pointer-events:none;
+    transition:all 0.35s cubic-bezier(0.16,1,0.3,1); z-index:999; white-space:nowrap;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .toast.error { border-color:#e0505050; color:#f08080; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <div class="header">
+    <div class="header-line"></div>
+    <div class="header-badge">Myeongdong Art Breeze</div>
+    <h1>공간 <span>대관</span> 신청서</h1>
+    <p class="header-sub">Space Rental Application · B2 – 6F</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('form')">신청서 작성</button>
+    <button class="tab-btn" onclick="switchTab('list')">신청 현황 <span class="tab-count" id="tab-count">0</span></button>
+    <button class="tab-btn tab-guide" onclick="openGuide()">백엔드 연동 가이드 ↗</button>
+  </div>
+
+  <!-- FORM PANEL -->
+  <div class="panel active" id="panel-form">
+
+    <!-- 01 신청인 정보 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">01</span><span class="section-label">신청인 정보</span><div class="section-line"></div></div>
+      <div class="field-grid cols-2">
+        <div class="field"><label>이름 / 담당자 <span class="req">*</span></label><input type="text" id="f-name" placeholder="홍길동" /></div>
+        <div class="field"><label>연락처 <span class="req">*</span></label><input type="tel" id="f-phone" placeholder="010-0000-0000" /></div>
+        <div class="field"><label>이메일 <span class="req">*</span></label><input type="email" id="f-email" placeholder="example@email.com" /></div>
+        <div class="field"><label>소속 (단체 / 업체명)</label><input type="text" id="f-org" placeholder="선택 사항" /></div>
+      </div>
+    </div>
+
+    <!-- 02 공간 선택 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">02</span><span class="section-label">공간 선택</span><div class="section-line"></div></div>
+      <div class="space-grid" id="space-grid">
+        <!-- 카드는 JS init()이 렌더링 -->
+      </div>
+    </div>
+
+    <!-- 03 대관 일정 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">03</span><span class="section-label">대관 일정</span><div class="section-line"></div></div>
+      <div class="field-grid cols-2" style="margin-bottom:14px">
+        <div class="field"><label>시작일 <span class="req">*</span></label><input type="date" id="f-date-start" /></div>
+        <div class="field"><label>종료일 <span class="req">*</span></label><input type="date" id="f-date-end" /></div>
+      </div>
+      <div class="field-grid cols-2">
+        <div class="field"><label>시작 시간 <span class="req">*</span></label><input type="time" id="f-time-start" /></div>
+        <div class="field"><label>종료 시간 <span class="req">*</span></label><input type="time" id="f-time-end" /></div>
+      </div>
+      <div id="duration-display"></div>
+    </div>
+
+    <!-- 04 이용 목적 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">04</span><span class="section-label">이용 목적</span><div class="section-line"></div></div>
+      <div class="purpose-chips" id="purpose-chips" style="margin-bottom:16px"></div>
+      <div class="field"><label>상세 내용 <span class="req">*</span></label><textarea id="f-detail" placeholder="행사/프로그램 상세 내용 (예상 인원, 장비 사용 여부, 특이사항 등)"></textarea></div>
+    </div>
+
+    <!-- 05 추가 정보 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">05</span><span class="section-label">추가 정보</span><div class="section-line"></div></div>
+      <div class="field-grid cols-3">
+        <div class="field"><label>예상 인원</label><input type="number" id="f-headcount" placeholder="명" min="1" /></div>
+        <div class="field"><label>신청 유형</label>
+          <select id="f-type">
+            <option value="">선택</option>
+            <option value="일반">일반</option>
+            <option value="정기">정기 프로그램</option>
+            <option value="중구민">중구민 할인</option>
+            <option value="제휴">제휴·파트너십</option>
+          </select>
+        </div>
+        <div class="field"><label>예산 규모 (원)</label><input type="text" id="f-budget" placeholder="협의 가능" /></div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="field"><label>필요 장비 및 요청사항</label><textarea id="f-equipment" placeholder="빔프로젝터, 마이크, 의자 배치 등" style="min-height:72px"></textarea></div>
+    </div>
+
+    <!-- 06 약관 동의 -->
+    <div class="form-section">
+      <div class="section-title"><span class="section-num">06</span><span class="section-label">이용 약관 동의</span><div class="section-line"></div></div>
+      <div class="agreement-box">
+        <strong>아트브리즈 공간 대관 이용 약관</strong><br/><br/>
+        제1조 (목적) 본 약관은 명동 아트브리즈의 공간 대관 서비스 이용에 관한 제반 사항을 규정함을 목적으로 합니다.<br/><br/>
+        제2조 (신청 및 승인) 대관 신청은 온라인 신청서 작성으로 접수됩니다. 시설 운영팀이 검토 후 3영업일 내 승인 여부를 이메일로 통보합니다.<br/><br/>
+        제3조 (대관료 및 결제) 대관료는 공간별·시간대별로 별도 산정됩니다. 중구 주민·직장인은 최대 40% 할인 혜택이 적용됩니다.<br/><br/>
+        제4조 (취소 및 환불) 대관 7일 전 취소: 전액 환불 / 3~6일 전: 50% 환불 / 2일 이내: 환불 불가<br/><br/>
+        제5조 (시설 이용 의무) 이용자는 시설 및 장비를 선량한 관리자로서 이용하여야 하며, 이용자 귀책으로 발생한 시설 훼손은 배상 책임을 집니다.<br/><br/>
+        제6조 (개인정보) 수집된 개인정보는 대관 서비스 제공 목적으로만 사용되며, 관련 법령에 따라 보호됩니다.
+      </div>
+      <label class="checkbox-row"><input type="checkbox" id="f-agree1" /><span>[필수] 이용 약관 전문에 동의합니다.</span></label>
+      <label class="checkbox-row"><input type="checkbox" id="f-agree2" /><span>[필수] 개인정보 수집·이용에 동의합니다. (성명, 연락처, 이메일 — 대관 서비스 제공, 보유 2년)</span></label>
+    </div>
+
+    <div class="submit-area">
+      <button class="btn-reset" onclick="resetForm()">초기화</button>
+      <button class="btn-submit" onclick="submitForm()">신청서 제출 →</button>
+    </div>
+  </div>
+
+  <!-- LIST PANEL -->
+  <div class="panel" id="panel-list">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="toolbar">
+      <input class="search-input" type="text" id="search-input" placeholder="이름, 공간, 목적으로 검색..." oninput="renderList()" />
+      <select class="filter-select" id="filter-status" onchange="renderList()">
+        <option value="">전체 상태</option>
+        <option value="대기">대기</option>
+        <option value="승인">승인</option>
+        <option value="거절">거절</option>
+      </select>
+      <button class="btn-toolbar" onclick="exportCSV()">CSV 내보내기</button>
+      <button class="btn-toolbar danger" onclick="clearAll()">전체 삭제</button>
+    </div>
+    <div id="list-container"></div>
+  </div>
+
+</div><!-- /page-wrapper -->
+
+<!-- BACKEND GUIDE MODAL -->
+<div class="modal-overlay" id="guide-modal" onclick="closeGuideOnBg(event)">
+  <div class="modal">
+    <div class="modal-title">백엔드 데이터 연동 가이드</div>
+    <div class="modal-sub">Backend Integration · 신청 데이터를 서버에 영구 저장하는 방법</div>
+
+    <div class="guide-step">
+      <div class="guide-step-header"><div class="guide-step-num">A</div><div class="guide-step-title">Google Sheets (무료 · 추천)</div></div>
+      <p>① Google Sheets → 확장 프로그램 → Apps Script → ArtBreeze_대관신청_Backend.gs 코드 붙여넣기</p>
+      <p>② 배포 → 새 배포 → 웹앱 → 모든 사용자 → 배포 URL 복사</p>
+      <p>③ 이 파일 하단 스크립트에서 <code style="color:var(--gold-light)">SHEETS_URL</code> 변수에 URL 붙여넣기</p>
+      <p>④ <code style="color:var(--gold-light)">sendToGoogleSheets(app);</code> 앞의 주석(<code style="color:var(--gold-light)">//</code>) 제거</p>
+    </div>
+
+    <div class="guide-divider"></div>
+
+    <div class="guide-step">
+      <div class="guide-step-header"><div class="guide-step-num">B</div><div class="guide-step-title">Notion 데이터베이스</div></div>
+      <p>notion.so/my-integrations에서 Integration Token 발급 후 <code style="color:var(--gold-light)">saveToNotion(app);</code> 주석 해제</p>
+    </div>
+
+    <div class="guide-divider"></div>
+
+    <div class="guide-step">
+      <div class="guide-step-header"><div class="guide-step-num">C</div><div class="guide-step-title">Supabase PostgreSQL (실서비스 권장)</div></div>
+      <p>supabase.com에서 프로젝트 생성 후 URL과 anon key를 입력하고 <code style="color:var(--gold-light)">saveToSupabase(app);</code> 주석 해제</p>
+    </div>
+
+    <button class="modal-close" onclick="closeGuide()">닫기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+// ── 데이터 ───────────────────────────────────────────────────────
+const SPACES = [
+  { id:"gallery_cafe",  name:"갤러리카페",     floor:"2F",  cap:"40–50명",       icon:"☕" },
+  { id:"gallery_room",  name:"갤러리전시실",   floor:"3F",  cap:"전시 공간",      icon:"🖼" },
+  { id:"theater",       name:"소극장",         floor:"B1",  cap:"25명",          icon:"🎭" },
+  { id:"studio",        name:"유튜브스튜디오", floor:"B2",  cap:"촬영 스튜디오", icon:"🎬" },
+  { id:"dance",         name:"K-pop댄스/요가", floor:"5F",  cap:"20명",          icon:"💃" },
+  { id:"lecture_m",     name:"중강의실",       floor:"6F",  cap:"15명",          icon:"📚" },
+  { id:"lecture_s",     name:"소강의실",       floor:"6F",  cap:"12명",          icon:"📖" },
+];
+
+const PURPOSES = ["팝업스토어","전시","공연·콘서트","강의·워크샵","촬영","파티·행사","클래스","기타"];
+
+let selectedSpace   = null;
+let selectedPurposes = [];
+
+// ── 초기화 ──────────────────────────────────────────────────────
+function init() {
+  // 공간 카드 렌더링
+  document.getElementById("space-grid").innerHTML = SPACES.map(s =>
+    `<div class="space-card" id="sc-${s.id}" onclick="selectSpace('${s.id}')">
+      <div class="space-card-floor">${s.icon} ${s.floor}</div>
+      <div class="space-card-name">${s.name}</div>
+      <div class="space-card-cap">${s.cap}</div>
+    </div>`
+  ).join("");
+
+  // 목적 칩 렌더링
+  document.getElementById("purpose-chips").innerHTML = PURPOSES.map(p =>
+    `<div class="chip" id="chip-${p}" onclick="togglePurpose('${p}')">${p}</div>`
+  ).join("");
+
+  // 날짜 기본값
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById("f-date-start").value = today;
+  document.getElementById("f-date-end").value   = today;
+  document.getElementById("f-time-start").value = "10:00";
+  document.getElementById("f-time-end").value   = "13:00";
+  updateDuration();
+
+  ["f-date-start","f-date-end","f-time-start","f-time-end"].forEach(id =>
+    document.getElementById(id).addEventListener("change", updateDuration)
+  );
+
+  updateTabCount();
+}
+
+// ── 공간 선택 ────────────────────────────────────────────────────
+function selectSpace(id) {
+  if (selectedSpace) document.getElementById("sc-"+selectedSpace)?.classList.remove("selected");
+  selectedSpace = id;
+  document.getElementById("sc-"+id)?.classList.add("selected");
+}
+
+// ── 목적 선택 ────────────────────────────────────────────────────
+function togglePurpose(p) {
+  const el = document.getElementById("chip-"+p);
+  if (selectedPurposes.includes(p)) {
+    selectedPurposes = selectedPurposes.filter(x => x !== p);
+    el.classList.remove("selected");
+  } else {
+    selectedPurposes.push(p);
+    el.classList.add("selected");
+  }
+}
+
+// ── 이용 시간 계산 ───────────────────────────────────────────────
+function updateDuration() {
+  const ds = v("f-date-start"), de = v("f-date-end");
+  const ts = v("f-time-start"), te = v("f-time-end");
+  const el = document.getElementById("duration-display");
+  if (!ds||!de||!ts||!te) { el.textContent=""; return; }
+  const diff = (new Date(`${de}T${te}`) - new Date(`${ds}T${ts}`)) / 60000;
+  if (diff <= 0) { el.textContent="⚠ 종료 시간이 시작보다 빠릅니다"; el.style.color="var(--red)"; return; }
+  el.style.color = "var(--gold)";
+  const d=Math.floor(diff/1440), h=Math.floor((diff%1440)/60), m=diff%60;
+  el.textContent = "총 이용 시간: " + (d?d+"일 ":"") + (h?h+"시간 ":"") + (m?m+"분":"");
+}
+
+// ── 저장소 ──────────────────────────────────────────────────────
+function getApps()     { try { return JSON.parse(localStorage.getItem("ab_apps")||"[]"); } catch { return []; } }
+function saveApps(arr) { localStorage.setItem("ab_apps", JSON.stringify(arr)); }
+function genId()       { const d=new Date(); return `AB-${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}-${Math.floor(Math.random()*9000)+1000}`; }
+function p2(n)         { return String(n).padStart(2,"0"); }
+function v(id)         { return document.getElementById(id).value.trim(); }
+
+// ── 제출 ────────────────────────────────────────────────────────
+function submitForm() {
+  const name=v("f-name"), phone=v("f-phone"), email=v("f-email");
+  const ds=v("f-date-start"), de=v("f-date-end"), ts=v("f-time-start"), te=v("f-time-end");
+  const detail = v("f-detail");
+  const a1 = document.getElementById("f-agree1").checked;
+  const a2 = document.getElementById("f-agree2").checked;
+
+  if (!name)          return showToast("이름을 입력해 주세요","error");
+  if (!phone)         return showToast("연락처를 입력해 주세요","error");
+  if (!email)         return showToast("이메일을 입력해 주세요","error");
+  if (!selectedSpace) return showToast("공간을 선택해 주세요","error");
+  if (!ds||!ts||!te)  return showToast("날짜와 시간을 입력해 주세요","error");
+  if (!detail)        return showToast("이용 목적 상세 내용을 작성해 주세요","error");
+  if (!a1||!a2)       return showToast("필수 약관에 동의해 주세요","error");
+
+  const space = SPACES.find(s => s.id === selectedSpace);
+  const app = {
+    id: genId(), submittedAt: new Date().toISOString(), status: "대기",
+    name, phone, email, org: v("f-org"),
+    spaceId: selectedSpace, spaceName: space?.name||selectedSpace, spaceFloor: space?.floor||"",
+    dateStart: ds, dateEnd: de, timeStart: ts, timeEnd: te,
+    purposes: [...selectedPurposes], detail,
+    headcount: v("f-headcount"), type: document.getElementById("f-type").value,
+    budget: v("f-budget"), equipment: v("f-equipment"),
+  };
+
+  const apps = getApps(); apps.unshift(app); saveApps(apps);
+
+  // 백엔드 연동 시 주석 해제 후 URL 교체
+  sendToGoogleSheets(app);   // Option A · Google Sheets → mdbreeze2023@gmail.com 계정 시트로 저장
+  // saveToNotion(app);      // Option B · Notion
+  // saveToSupabase(app);    // Option C · Supabase
+
+  showToast("신청 완료! · "+app.id, "");
+  updateTabCount();
+  resetForm();
+  setTimeout(() => switchTab("list"), 1000);
+}
+
+// ── 초기화 ──────────────────────────────────────────────────────
+function resetForm() {
+  ["f-name","f-phone","f-email","f-org","f-detail","f-headcount","f-budget","f-equipment"]
+    .forEach(id => document.getElementById(id).value = "");
+  document.getElementById("f-type").value = "";
+  document.getElementById("f-agree1").checked = false;
+  document.getElementById("f-agree2").checked = false;
+  if (selectedSpace) { document.getElementById("sc-"+selectedSpace)?.classList.remove("selected"); selectedSpace=null; }
+  selectedPurposes.forEach(p => document.getElementById("chip-"+p)?.classList.remove("selected"));
+  selectedPurposes = [];
+}
+
+// ── Google Sheets 연동 ───────────────────────────────────────────
+var SHEETS_URL = "https://script.google.com/macros/s/여기에_배포_URL_입력/exec";
+
+async function sendToGoogleSheets(app) {
+  try {
+    await fetch(SHEETS_URL, {
+      method: "POST", mode: "no-cors",
+      body: JSON.stringify(app),
+      headers: { "Content-Type": "application/json" }
+    });
+    console.log("Sheets 저장 요청 완료");
+  } catch(err) { console.error("Sheets 저장 실패:", err); }
+}
+
+// ── 신청 목록 렌더링 ─────────────────────────────────────────────
+function renderList() {
+  const apps = getApps();
+  const q  = (document.getElementById("search-input")?.value||"").toLowerCase();
+  const st = document.getElementById("filter-status")?.value||"";
+  const t=apps.length, w=apps.filter(a=>a.status==="대기").length,
+        ap=apps.filter(a=>a.status==="승인").length, re=apps.filter(a=>a.status==="거절").length;
+
+  document.getElementById("stats-row").innerHTML = `
+    <div class="stat-card"><div class="stat-num">${t}</div><div class="stat-label">TOTAL</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--gold)">${w}</div><div class="stat-label">대기</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${ap}</div><div class="stat-label">승인</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${re}</div><div class="stat-label">거절</div></div>`;
+
+  let list = apps;
+  if (q)  list = list.filter(a => (a.name+a.spaceName+(a.purposes||[]).join("")+a.detail).toLowerCase().includes(q));
+  if (st) list = list.filter(a => a.status === st);
+
+  const c = document.getElementById("list-container");
+  if (!list.length) {
+    c.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">신청 내역이 없습니다</div></div>`;
+    return;
+  }
+  c.innerHTML = list.map(a => {
+    const dl = a.dateStart===a.dateEnd
+      ? `${a.dateStart} ${a.timeStart}–${a.timeEnd}`
+      : `${a.dateStart} ~ ${a.dateEnd}`;
+    return `<div class="app-card">
+      <div class="app-card-header" onclick="toggleCard('body-${a.id}')">
+        <span class="app-id">${a.id}</span>
+        <span class="app-name">${esc(a.name)}${a.org?` <span style="font-weight:500;font-size:12px;color:var(--text-dim)">(${esc(a.org)})</span>`:""}</span>
+        <span class="app-space">${a.spaceName} · ${a.spaceFloor}</span>
+        <span class="app-date-badge">${a.submittedAt.slice(0,10)}</span>
+        <span class="status-badge status-${a.status}">${a.status}</span>
+      </div>
+      <div class="app-card-body" id="body-${a.id}">
+        <div class="detail-grid">
+          <div><div class="detail-key">연락처</div><div class="detail-val">${esc(a.phone)}</div></div>
+          <div><div class="detail-key">이메일</div><div class="detail-val">${esc(a.email)}</div></div>
+          <div><div class="detail-key">신청유형</div><div class="detail-val">${a.type||"—"}</div></div>
+          <div><div class="detail-key">일정</div><div class="detail-val">${dl}</div></div>
+          <div><div class="detail-key">예상인원</div><div class="detail-val">${a.headcount?a.headcount+"명":"—"}</div></div>
+          <div><div class="detail-key">목적</div><div class="detail-val">${(a.purposes||[]).join(", ")||"—"}</div></div>
+        </div>
+        <div class="detail-box">${esc(a.detail)}</div>
+        ${a.equipment?`<div class="detail-box" style="margin-top:-8px;color:var(--text-dim)">📦 ${esc(a.equipment)}</div>`:""}
+        <div class="card-actions">
+          <button class="btn-action btn-approve" onclick="setStatus('${a.id}','승인')">✓ 승인</button>
+          <button class="btn-action btn-reject"  onclick="setStatus('${a.id}','거절')">✕ 거절</button>
+          <button class="btn-action btn-delete"  onclick="delApp('${a.id}')">삭제</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleCard(id) { document.getElementById(id)?.classList.toggle("open"); }
+
+function setStatus(id, s) {
+  const apps=getApps(); const i=apps.findIndex(a=>a.id===id);
+  if(i<0) return; apps[i].status=s; saveApps(apps); renderList(); updateTabCount();
+  showToast(id+" → "+s, "");
+}
+
+function delApp(id) {
+  if(!confirm("이 신청서를 삭제하시겠습니까?")) return;
+  saveApps(getApps().filter(a=>a.id!==id)); renderList(); updateTabCount();
+}
+
+function clearAll() {
+  if(!confirm("모든 신청 데이터를 삭제하시겠습니까?")) return;
+  saveApps([]); renderList(); updateTabCount();
+}
+
+// ── CSV 내보내기 ─────────────────────────────────────────────────
+function exportCSV() {
+  const apps = getApps();
+  if(!apps.length) { showToast("데이터가 없습니다","error"); return; }
+  const H = ["ID","접수일","상태","이름","소속","연락처","이메일","공간","층","시작일","종료일","시작시간","종료시간","목적","인원","신청유형","예산","장비","상세"];
+  const R = apps.map(a=>[
+    a.id, a.submittedAt.slice(0,10), a.status, a.name, a.org, a.phone, a.email,
+    a.spaceName, a.spaceFloor, a.dateStart, a.dateEnd, a.timeStart, a.timeEnd,
+    (a.purposes||[]).join("/"), a.headcount, a.type, a.budget,
+    (a.equipment||"").replace(/\n/g," "), (a.detail||"").replace(/\n/g," ")
+  ].map(x=>`"${String(x||"").replace(/"/g,'""')}"`));
+  const csv = [H.join(","), ...R.map(r=>r.join(","))].join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}));
+  a.download = `artbreeze_대관신청_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ── 탭 전환 ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll(".tab-btn").forEach((b,i) =>
+    b.classList.toggle("active",(i===0&&tab==="form")||(i===1&&tab==="list"))
+  );
+  document.getElementById("panel-form").classList.toggle("active", tab==="form");
+  document.getElementById("panel-list").classList.toggle("active", tab==="list");
+  if(tab==="list") renderList();
+}
+
+// ── 헬퍼 ────────────────────────────────────────────────────────
+function updateTabCount() { document.getElementById("tab-count").textContent = getApps().length; }
+function openGuide()      { document.getElementById("guide-modal").classList.add("open"); }
+function closeGuide()     { document.getElementById("guide-modal").classList.remove("open"); }
+function closeGuideOnBg(e){ if(e.target===e.currentTarget) closeGuide(); }
+function showToast(msg, type) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast"+(type==="error"?" error":"")+" show";
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 3200);
+}
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── 실행 ────────────────────────────────────────────────────────
+init();
+
+</script>
+</body>
+</html>
